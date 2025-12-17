@@ -1,0 +1,2489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抢状元游戏</title>
+    <style>
+        /* 导入美观的字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&family=Fredoka:wght@300;400;500;600;700&display=swap');
+        
+        /* 全局样式 */
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: 
+                /* 中国红主题渐变 */
+                linear-gradient(135deg, #8b0000, #a93226, #c0392b, #e74c3c),
+                /* 中国传统云纹图案 */
+                url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 20C40 20 25 35 25 55s15 35 35 35 35-15 35-35S80 20 60 20zm0 60C45 80 35 70 35 55s10-25 25-25 25 10 25 25-10 25-25 25zm0-45c-8 0-15 7-15 15s7 15 15 15 15-7 15-15-7-15-15-15zm0 25c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm-25 5c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5zm50 0c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5zm-25-35c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5zm0 60c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5z' fill='%23ffffff' fill-opacity='0.08' fill-rule='evenodd'/%3E%3Cpath d='M60 10C20 10 0 30 0 60s20 50 60 50 60-20 60-50S100 10 60 10zm0 100C30 110 10 90 10 60S30 10 60 10s50 20 50 50-20 50-50 50z' fill='%23ffffff' fill-opacity='0.04' fill-rule='evenodd'/%3E%3C/svg%3E");
+            margin: 0;
+            padding: 10px;
+            text-align: center;
+            min-height: 100vh;
+            background-attachment: fixed;
+            background-size: cover, 150px 150px;
+            background-blend-mode: overlay;
+            color: #2d3748;
+            position: relative;
+        }
+        
+        /* 作者信息样式 */
+        .author-info {
+            margin-top: 15px;
+            font-size: 18px;
+            line-height: 1.5;
+            color: white;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        /* 容器样式 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        /* 标题样式 */
+        h1 {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 4rem;
+            margin: 15px 0;
+            color: #8b0000;
+            text-shadow: none;
+            font-weight: bold;
+            letter-spacing: 6px;
+            background: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            box-shadow: none;
+            display: inline-block;
+            border: 3px solid #8b0000;
+            transform: rotate(-1deg);
+        }
+        
+        h2, h3, h4 {
+            font-family: 'Fredoka', cursive;
+            color: #8b0000;
+            margin: 5px 0;
+        }
+        
+        /* 骰子容器样式 */
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            margin: 8px 0;
+            gap: 39px;
+        }
+        
+        /* 骰子样式 */
+        .dice {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: 2.5px solid #8b0000;
+            border-radius: 10px;
+            display: grid;
+            grid-template-rows: repeat(3, 1fr);
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+            padding: 6px;
+            margin: 0;
+            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        /* 骰子点数样式 */
+        .dot {
+            background: white;
+            border-radius: 50%;
+            width: 70%;
+            height: 70%;
+            margin: auto;
+        }
+        
+        /* 不同点数的布局 */
+        .dice.dice-1 .dot:nth-child(1) { grid-row: 2; grid-column: 2; }
+        
+        .dice.dice-2 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
+        .dice.dice-2 .dot:nth-child(2) { grid-row: 3; grid-column: 3; }
+        
+        .dice.dice-3 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
+        .dice.dice-3 .dot:nth-child(2) { grid-row: 2; grid-column: 2; }
+        .dice.dice-3 .dot:nth-child(3) { grid-row: 3; grid-column: 3; }
+        
+        .dice.dice-4 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
+        .dice.dice-4 .dot:nth-child(2) { grid-row: 1; grid-column: 3; }
+        .dice.dice-4 .dot:nth-child(3) { grid-row: 3; grid-column: 1; }
+        .dice.dice-4 .dot:nth-child(4) { grid-row: 3; grid-column: 3; }
+        
+        .dice.dice-5 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
+        .dice.dice-5 .dot:nth-child(2) { grid-row: 1; grid-column: 3; }
+        .dice.dice-5 .dot:nth-child(3) { grid-row: 2; grid-column: 2; }
+        .dice.dice-5 .dot:nth-child(4) { grid-row: 3; grid-column: 1; }
+        .dice.dice-5 .dot:nth-child(5) { grid-row: 3; grid-column: 3; }
+        
+        .dice.dice-6 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
+        .dice.dice-6 .dot:nth-child(2) { grid-row: 1; grid-column: 3; }
+        .dice.dice-6 .dot:nth-child(3) { grid-row: 2; grid-column: 1; }
+        .dice.dice-6 .dot:nth-child(4) { grid-row: 2; grid-column: 3; }
+        .dice.dice-6 .dot:nth-child(5) { grid-row: 3; grid-column: 1; }
+        .dice.dice-6 .dot:nth-child(6) { grid-row: 3; grid-column: 3; }
+        
+        .dice:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(231, 76, 60, 0.6);
+        }
+        
+        .dice.rolling {
+            animation: roll 0.1s infinite linear;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            transform: scale(1.1);
+        }
+        
+        @keyframes roll {
+            0% { transform: rotate(0deg) scale(1.1); }
+            25% { transform: rotate(45deg) scale(1.1); }
+            50% { transform: rotate(90deg) scale(1.1); }
+            75% { transform: rotate(135deg) scale(1.1); }
+            100% { transform: rotate(180deg) scale(1.1); }
+        }
+        
+        /* 按钮样式 - 重新设计 */
+        .button {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            color: white;
+            padding: 18px 35px;
+            font-size: 20px;
+            font-weight: 600;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 8px;
+            transition: all 0.3s ease;
+            font-family: 'Fredoka', cursive;
+            box-shadow: 0 5px 15px rgba(192, 57, 43, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 160px;
+            display: inline-block;
+        }
+        
+        /* 历史记录样式 */
+        #historyContainer {
+            background: linear-gradient(135deg, #fff5f5, #ffebee);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        #historyContainer h3 {
+            color: #8b0000;
+            margin-top: 0;
+            text-align: left;
+            font-size: 16px;
+        }
+        
+        .history-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 10px;
+            margin: 0;
+            border-left: 4px solid #8b0000;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(192, 57, 43, 0.6);
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .button:active {
+            transform: translateY(1px);
+        }
+        
+        .button:disabled {
+            background: linear-gradient(135deg, #ffcccc, #ff9999);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* 小型按钮样式 */
+        .small-button {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Fredoka', cursive;
+            box-shadow: 0 3px 12px rgba(192, 57, 43, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 140px;
+            display: inline-block;
+        }
+        
+        .small-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(192, 57, 43, 0.6);
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .small-button:active {
+            transform: translateY(0);
+        }
+        
+        /* 按钮容器样式 */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 5px 0;
+            flex-wrap: wrap;
+        }
+        
+        /* 表格样式 */
+        .table-container {
+            overflow-x: auto;
+            margin: 15px 0 10px 0;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(231, 76, 60, 0.2);
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0 auto;
+            font-size: 16px;
+        }
+        
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: center;
+            color: #2d3748;
+        }
+        
+        /* 设置计分表各列的固定宽度 */
+        #gameTable th:nth-child(1), #gameTable td:nth-child(1) {
+            width: 8%; /* 实时排名列 */
+        }
+        #gameTable th:nth-child(2), #gameTable td:nth-child(2) {
+            width: 12%; /* 玩家列 */
+        }
+        #gameTable th:nth-child(3), #gameTable td:nth-child(3) {
+            width: 10%; /* 状元列 */
+        }
+        #gameTable th:nth-child(4), #gameTable td:nth-child(4) {
+            width: 10%; /* 榜眼/探花列 */
+        }
+        #gameTable th:nth-child(5), #gameTable td:nth-child(5) {
+            width: 10%; /* 贡生列 */
+        }
+        #gameTable th:nth-child(6), #gameTable td:nth-child(6) {
+            width: 10%; /* 进士列 */
+        }
+        #gameTable th:nth-child(7), #gameTable td:nth-child(7) {
+            width: 10%; /* 举人列 */
+        }
+        #gameTable th:nth-child(8), #gameTable td:nth-child(8) {
+            width: 10%; /* 秀才列 */
+        }
+        #gameTable th:nth-child(9), #gameTable td:nth-child(9) {
+            width: 10%; /* 得分列 */
+        }
+        
+        th {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-size: 14px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #fff5f5;
+        }
+        
+        tr:hover {
+            background-color: #ffebee;
+        }
+        
+        /* 突出分数显示 */
+        td:last-child {
+            font-weight: bold;
+            font-size: 16px;
+            color: #8b0000;
+            background-color: rgba(139, 0, 0, 0.1);
+        }
+        
+        /* 玩家回合样式 */
+        .player-turn {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 15px 0;
+            font-family: 'Fredoka', cursive;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(45deg, #ff4757, #ff3742, #e84118, #c23616);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* 结果样式 */
+        .result {
+            font-size: 18px;
+            margin: 10px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #a93226, #c0392b);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(169, 50, 38, 0.4);
+            text-align: left;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+        
+        /* 回合信息样式 */
+        .round-info {
+            margin: 15px 0 5px 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #8b0000;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+        }
+        
+        /* 具体剩余签数样式 */
+        .remaining-signs {
+            margin: 5px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.4);
+        }
+        
+        .remaining-signs h4 {
+            color: white;
+            margin: 0 0 15px 0;
+            font-size: 22px;
+            text-align: center;
+        }
+        
+        .remaining-signs > div {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 5px;
+            margin: 0 auto;
+            max-width: 700px;
+        }
+        
+        .remaining-signs > div > div {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-size: 16px;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .remaining-signs > div > div:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* 帮助部分样式 */
+        .help-section {
+            margin: 10px 0 5px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            border-radius: 12px;
+            text-align: left;
+            color: white;
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.4);
+            font-size: 14px;
+        }
+        
+        .help-section h3 {
+            color: white;
+            margin: 10px 0;
+            font-size: 20px;
+            text-align: center;
+        }
+        
+        .help-section p, .help-section li {
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: left;
+        }
+        
+        .help-section ul {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+        
+        /* 游戏信息样式 */
+        .game-info {
+            text-align: left;
+            margin: 10px 0;
+            padding: 12px;
+            background: linear-gradient(135deg, #a93226, #c0392b);
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(169, 50, 38, 0.4);
+            font-size: 12px;
+        }
+        
+        .game-info h2 {
+            margin: 5px 0;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        /* 游戏布局 - 左右分栏 */
+        .game-layout {
+            display: flex;
+            gap: 30px;
+            align-items: stretch;
+        }
+        
+        .left-column {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .right-column {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* 调整结果显示为居中 */
+        .result {
+            text-align: center;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .game-layout {
+                flex-direction: column;
+            }
+            
+            .left-column,
+            .right-column {
+                width: 100%;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .dice {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            
+            .round-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        /* 添加装饰元素 */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            border-radius: 25px;
+            z-index: -1;
+        }
+        
+        /* 弹窗样式 */
+        .modal {
+            display: none; /* 默认隐藏 */
+            position: fixed; /* 固定定位 */
+            z-index: 1000; /* 确保在最上层 */
+            left: 0;
+            top: 0;
+            width: 100%; /* 全屏 */
+            height: 100%; /* 全屏 */
+            overflow: auto; /* 允许滚动 */
+            background-color: rgba(0,0,0,0.5); /* 半透明背景 */
+        }
+        
+        /* 弹窗内容样式 */
+        .modal-content {
+            background-color: white;
+            margin: 5% auto; /* 居中显示 */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* 宽度 */
+            max-width: 800px; /* 最大宽度 */
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        /* 关闭按钮样式 */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 10px;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        /* 规则内容样式 */
+        .rules-content {
+            max-height: 60vh; /* 最大高度 */
+            overflow-y: auto; /* 允许滚动 */
+            line-height: 1.6;
+        }
+        
+        .rules-content h2 {
+            text-align: left;
+            color: #8b0000;
+            margin-bottom: 20px;
+        }
+        
+        .rules-content h3 {
+            text-align: left;
+            color: #c0392b;
+            margin: 20px 0 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+        
+        .rules-content h3::before {
+            content: "· ";
+            font-size: 1.5em;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        
+        .rules-content ul {
+            margin: 10px 0;
+            padding-left: 25px;
+            list-style-type: none;
+        }
+        
+        .rules-content li {
+            text-align: left;
+            margin: 5px 0;
+            color: #2d3748;
+        }
+        
+        /* 蓝色主题下的弹窗样式 */
+        body.blue-theme .modal-content {
+            box-shadow: 0 10px 30px rgba(25, 118, 210, 0.3);
+        }
+        
+        body.blue-theme .rules-content h2 {
+            color: #1976d2 !important;
+        }
+        
+        body.blue-theme .rules-content h3 {
+            color: #1976d2 !important;
+            border-bottom: 1px solid #bbdefb !important;
+        }
+        
+        body.blue-theme .rules-content h3::before {
+            color: #1976d2 !important;
+        }
+        
+        body.blue-theme .rules-content li {
+            color: #0d47a1 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>抢状元</h1>
+        <button class="small-button" id="showRules" onclick="showRules()" title="查看牌型规则" style="position: absolute; top: 20px; right: 20px;">📖 牌型规则</button>
+        
+        <div class="game-layout">
+            <!-- 左侧栏：游戏规则、剩余签数和游戏状态 -->
+            <div class="left-column">
+                <div class="round-info">
+                    <p>当前回合：<span id="round">1</span></p>
+                    <p>剩余签数：<span id="remaining">63</span></p>
+                </div>
+                
+                <div class="help-section">
+                    <h3>游戏规则</h3>
+                    <p>游戏共63个签：【状元】（32分）1个，【榜眼】（16分）1个，【探花】（16分）1个，【贡生】（8分）4个，【进士】（4分）8个，【举人】（2分）16个，【秀才】（1分）32个。</p>
+                    <p>玩家轮流掷骰子，每人每回合掷6个骰子，根据骰子的排列情况获得相应的签数和分数。</p>
+                    <p>特殊规则：</p>
+                    <ul>
+                        <li>1. 如果没有对应签，则获得更小的签</li>
+                        <li>2. 只剩【状元】时，【榜眼】/【探花】可直接获得，或【贡生】+补掷【举人】可获得</li>
+                        <li>3. 更大的【状元】可抢他人已有的【状元】</li>
+                        <li>4. 连中三元（5个4加3）可抢【状元】、【榜眼】、【探花】</li>
+                        <li>5. 全抄（6个一样）直接获得所有签（192分）</li>
+                    </ul>
+                </div>
+                
+                <div class="remaining-signs">
+                    <h4>具体剩余签数</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center;">
+                        <div style="width: 30%; text-align: center;"><strong>状元：</strong><span id="remainingZhuangYuan">1</span></div>
+                        <div style="width: 30%; text-align: center;"><strong>榜眼/探花：</strong><span id="remainingBYTH">2</span></div>
+                        <div style="width: 30%; text-align: center;"><strong>贡生：</strong><span id="remainingGongSheng">4</span></div>
+                        <div style="width: 30%; text-align: center;"><strong>进士：</strong><span id="remainingJinShi">8</span></div>
+                        <div style="width: 30%; text-align: center;"><strong>举人：</strong><span id="remainingJuRen">16</span></div>
+                        <div style="width: 30%; text-align: center;"><strong>秀才：</strong><span id="remainingXiuCai">32</span></div>
+                    </div>
+                </div>
+                
+                <div style="margin: 5px 0; display: flex; justify-content: center; gap: 10px;">
+                <button class="small-button" id="toggleDiceStyle" onclick="toggleDiceStyle()">切换骰子样式</button>
+                <button class="small-button" id="toggleTheme" onclick="toggleTheme()">切换画面风格</button>
+            </div>
+            </div>
+            
+            <!-- 右侧栏：游戏进程 -->
+            <div class="right-column">
+                <div class="player-turn" id="playerTurn">玩家1的回合</div>
+                
+                <div class="dice-container">
+                    <div class="dice dice-1" id="dice1"><div class="dot"></div></div>
+                    <div class="dice dice-1" id="dice2"><div class="dot"></div></div>
+                    <div class="dice dice-1" id="dice3"><div class="dot"></div></div>
+                    <div class="dice dice-1" id="dice4"><div class="dot"></div></div>
+                    <div class="dice dice-1" id="dice5"><div class="dot"></div></div>
+                    <div class="dice dice-1" id="dice6"><div class="dot"></div></div>
+                </div>
+                
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center;">
+                    <button class="button" id="rollButton" onclick="rollDice()">掷骰子</button>
+                    <button class="button" id="startButton" onclick="startGame()">开始游戏</button>
+                    <button class="button" id="resetButton" onclick="resetGame()">重置游戏</button>
+                    <button class="button" id="historyBtn" onclick="toggleHistory()">历史记录</button>
+                    <div style="display: flex; flex-direction: column; gap: 5px; margin: 8px; justify-content: center;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="autoRoll" onchange="toggleAutoRoll()">
+                            <label for="autoRoll" style="font-size: 18px; font-weight: 600; color: #8b0000; font-family: 'Fredoka', cursive;">自动投掷</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="keyRoll" onchange="toggleKeyRoll()">
+                            <label for="keyRoll" style="font-size: 18px; font-weight: 600; color: #8b0000; font-family: 'Fredoka', cursive;">键盘投掷</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result" id="result"></div>
+                
+                <!-- 历史记录容器 -->
+                <div id="historyContainer">
+                    <h3>本局投掷记录</h3>
+                    <div id="historyList"></div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="gameTable">
+                        <thead>
+                            <tr>
+                                <th>实时排名</th>
+                                <th>玩家</th>
+                                <th>状元</th>
+                                <th>榜眼/探花</th>
+                                <th>贡生</th>
+                                <th>进士</th>
+                                <th>举人</th>
+                                <th>秀才</th>
+                                <th>得分</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- 动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 规则弹窗 -->
+    <div id="rulesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideRules()">&times;</span>
+            <div class="rules-content">
+                <h2>牌型规则</h2>
+                
+                <h3>全抄（192分）</h3>
+                <ul>
+                    <li>【白骨现天】六颗 1 点</li>
+                    <li>【儿孙满堂】六颗 2 点</li>
+                    <li>【燕子高飞】六颗 3 点</li>
+                    <li>【万山红遍】六颗 4 点</li>
+                    <li>【遍地梅花】六颗 5 点</li>
+                    <li>【六六大顺】六颗 6 点</li>
+                </ul>
+                
+                <h3>状元（32分，从大到小排序）</h3>
+                <ul>
+                    <li>【连中三元】五颗 4 点，一颗 3 点（可以抢榜眼、探花，总计64分）</li>
+                    <li>【佛祖讲经】五颗 4 点，一颗 6 点</li>
+                    <li>【火烧梅花】五颗 4 点，一颗 5 点</li>
+                    <li>【藏书万卷】五颗 4 点，一颗 2 点</li>
+                    <li>【星星之火】五颗 4 点，一颗 1 点</li>
+                    <li>【将军挂印】五颗 6 点，一颗 4 点</li>
+                    <li>【五子挂六】五颗子一样，单的是 6 点</li>
+                    <li>【五子挂五】五颗子一样，单的是 5 点</li>
+                    <li>【五子挂四】五颗子一样，单的是 4 点（五颗 6 点除外）</li>
+                    <li>【五子挂三】五颗子一样，单的是 3 点</li>
+                    <li>【五子挂二】五颗子一样，单的是 2 点</li>
+                    <li>【五子挂一】五颗子一样，单的是 1 点</li>
+                    <li>【栀子】1 点与 3 点各一颗，其余四颗均为 4 点</li>
+                    <li>【兰子】2 点与 4 点各一颗，其余四颗均为 6 点</li>
+                    <li>【屏子】1 点与 4 点各一颗，其余四颗均为 5 点</li>
+                    <li>【格子】二颗 2 点，其余四颗均为 4 点</li>
+                    <li>【墨子】2 点与 3 点各一颗，其余四颗均为 5 点</li>
+                    <li>【菩萨】1 点与 5 点各一颗，其余四颗均为 6 点</li>
+                    <li>【燕子】1 点与 2 点各一颗，其余四颗均为 3 点</li>
+                    <li>【双龙摆尾】两颗 3 点，四颗 2 点</li>
+                    <li>【倒猴儿】两颗 1 点，四颗 6 点</li>
+                </ul>
+                
+                <h3>探花、榜眼（16分）</h3>
+                <ul>
+                    <li>【天地人】1、4、6 点各一对</li>
+                    <li>【摆台】4、5、6 点各一对</li>
+                    <li>【金元宝】三颗 4 点，三颗 1 点</li>
+                    <li>【金板凳】三颗 4 点，三颗 2 点</li>
+                    <li>【金串珠】三颗 4 点，三颗 3 点</li>
+                    <li>【金梅花】三颗 4 点，三颗 5 点</li>
+                    <li>【金牛背】三颗 4 点，三颗 6 点</li>
+                    <li>【黄金夺】三颗 4 点，其余三子之和等于 5 的</li>
+                    <li>【四红】含有四颗 4 点的</li>
+                    <li>【顺子】1、2、3、4、5、6 点各有一颗的</li>
+                </ul>
+                
+                <h3>贡生（8分）</h3>
+                <ul>
+                    <li>【三红】含有三颗 4 点且其它不规则的</li>
+                    <li>【红四柱】二颗 4 点，其余四颗相同</li>
+                    <li>【十八大】三颗 6 点，其余三颗相同</li>
+                    <li>【天夺】三颗 6 点，其余三颗之和为 5 的</li>
+                    <li>【靠子】2、3、6 点各一对</li>
+                    <li>【红对】含有 4 点的对子</li>
+                </ul>
+                
+                <h3>进士（4分）</h3>
+                <ul>
+                    <li>【四柱】除 4 点以外，有其它四颗相同</li>
+                    <li>【黑对】不含 4 点的对子</li>
+                    <li>【黑分】不含 4 点的三三子</li>
+                    <li>【墨夺】含非 4 点的三子，其它三子之和等于 5</li>
+                </ul>
+                
+                <h3>举人（2分）</h3>
+                <ul>
+                    <li>【二红】只有二颗 4 点</li>
+                </ul>
+                
+                <h3>秀才（1分）</h3>
+                <ul>
+                    <li>【一红】只有一颗 4 点</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 显示规则弹窗
+        function showRules() {
+            const modal = document.getElementById('rulesModal');
+            modal.style.display = 'block';
+        }
+        
+        // 隐藏规则弹窗
+        function hideRules() {
+            const modal = document.getElementById('rulesModal');
+            modal.style.display = 'none';
+        }
+        
+        // 点击弹窗外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('rulesModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+        // 常量定义
+        const ERROR = -2;
+        const QUAN_CHAO = -1;
+        const ZHUANG_YUAN = 0;
+        const BANG_YAN_TAN_HUA = 1;
+        const GONG_SHENG = 2;
+        const JIN_SHI = 3;
+        const JU_REN = 4;
+        const XIU_CAI = 5;
+        const QUAN_HEI = 6;
+        
+        // 状元类型
+        const DAO_HOU_ER = 10;
+        const SHUANG_LONG_BAI_WEI = 11;
+        const YAN_ZI = 12;
+        const PU_SA = 13;
+        const MO_ZI = 14;
+        const GE_ZI = 15;
+        const PING_ZI = 16;
+        const LAN_ZI = 17;
+        const ZHI_ZI = 18;
+        const WU_ZI_GUA_1 = 21;
+        const WU_ZI_GUA_2 = 22;
+        const WU_ZI_GUA_3 = 23;
+        const WU_ZI_GUA_4 = 24;
+        const WU_ZI_GUA_5 = 25;
+        const WU_ZI_GUA_6 = 26;
+        const JIANG_JUN_GUA_YIN = 27;
+        const XING_XING_ZHI_HUO = 31;
+        const CANG_SHU_WAN_JUAN = 32;
+        const HUO_SHAO_MEI_HUA = 35;
+        const FO_ZU_JIANG_JING = 36;
+        const LIAN_ZHONG_SAN_YUAN = 43;
+        
+        // 变量定义
+        // 计分表[玩家/[0]剩余/[0][0]状元类型][牌型签数/[6]玩家得分/[0][6]剩余签数]
+        // 与C语言完全一致：int table[7][7] = {0,2,4,8,16,32,63};
+        let table = [
+            [0, 2, 4, 8, 16, 32, 63],  // [0]剩余: [0]状元类型, [1]榜眼/探花, [2]贡生, [3]进士, [4]举人, [5]秀才, [6]总剩余
+            [0, 0, 0, 0, 0, 0, 0],      // 玩家1: [0]状元, [1]榜眼/探花, [2]贡生, [3]进士, [4]举人, [5]秀才, [6]得分
+            [0, 0, 0, 0, 0, 0, 0],      // 玩家2
+            [0, 0, 0, 0, 0, 0, 0],      // 玩家3
+            [0, 0, 0, 0, 0, 0, 0],      // 玩家4
+            [0, 0, 0, 0, 0, 0, 0],      // 玩家5
+            [0, 0, 0, 0, 0, 0, 0]       // 玩家6
+        ];
+        
+        // 玩家名称数组
+        let playerNames = ['', '玩家1', '玩家2', '玩家3', '玩家4', '玩家5', '玩家6'];
+        
+        let dices = [0, 0, 0, 0, 0, 0];
+        let currentPlayer = 1;
+        let gameStarted = false;
+        let round = 1;
+        let isRolling = false;
+        let isQiangZhuangYuanPhase = false; // 是否进入抢状元阶段
+        let isBuZhiPhase = false; // 是否进入补掷阶段
+        let isGongShengBuZhiPhase = false; // 是否是贡生补掷阶段（抢状元专用）
+        let currentBuZhiPlayer = 0; // 当前补掷玩家
+        let currentDetailedType = ""; // 当前详细牌型
+        let history = []; // 历史投掷记录数组
+        let historyVisible = false; // 历史记录是否可见
+        let useDotStyle = true; // 是否使用点数样式，false为数字样式
+        let isSkyBlueTheme = false; // 是否使用天蓝色主题
+        let isAutoRollEnabled = false; // 是否启用自动投掷
+        let autoRollTimer = null; // 自动投掷定时器
+        let isKeyRollEnabled = false; // 是否启用键盘投掷
+        
+        // 初始化游戏
+        function initGame() {
+            // 与C语言完全一致的初始化
+            table = [
+                [0, 2, 4, 8, 16, 32, 63],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0]
+            ];
+            // 重置玩家名称
+            playerNames = ['', '玩家1', '玩家2', '玩家3', '玩家4', '玩家5', '玩家6'];
+            currentPlayer = 1;
+            gameStarted = false;
+            round = 1;
+            isRolling = false;
+            isQiangZhuangYuanPhase = false;
+            isBuZhiPhase = false;
+            // 清空历史记录
+            history = [];
+            updateHistoryDisplay();
+            updatePlayerTurn();
+            updateTable();
+            updateRoundInfo();
+            clearResult();
+            
+            const rollButton = document.getElementById('rollButton');
+            const startButton = document.getElementById('startButton');
+            rollButton.disabled = true;
+            startButton.disabled = false;
+            
+            // 重新应用主题样式，确保按钮样式正确
+            if (isSkyBlueTheme) {
+                toggleTheme();
+                toggleTheme();
+            }
+            
+            resetDices();
+            // 隐藏历史记录
+            historyVisible = false;
+            document.getElementById('historyContainer').style.display = 'none';
+        }
+        
+        // 切换历史记录显示
+        function toggleHistory() {
+            historyVisible = !historyVisible;
+            const container = document.getElementById('historyContainer');
+            container.style.display = historyVisible ? 'block' : 'none';
+        }
+        
+        // 更新骰子显示
+        function updateDiceDisplay(diceId, value) {
+            const diceElement = document.getElementById(diceId);
+            // 处理初始0值，默认显示1
+            const displayValue = value || 1;
+            
+            if (useDotStyle) {
+                // 点数样式
+                // 清空现有内容
+                diceElement.innerHTML = '';
+                
+                // 移除之前的点数类
+                diceElement.className = 'dice';
+                diceElement.classList.add(`dice-${displayValue}`);
+                diceElement.style.display = 'grid';
+                
+                // 添加点数
+                for (let i = 0; i < displayValue; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    diceElement.appendChild(dot);
+                }
+            } else {
+                // 数字样式
+                diceElement.innerHTML = displayValue;
+                diceElement.className = 'dice';
+                diceElement.style.display = 'flex';
+                diceElement.style.justifyContent = 'center';
+                diceElement.style.alignItems = 'center';
+                diceElement.style.fontSize = '32px';
+                diceElement.style.fontWeight = 'bold';
+                diceElement.style.color = 'white';
+            }
+        }
+        
+        // 切换骰子样式
+        function toggleDiceStyle() {
+            useDotStyle = !useDotStyle;
+            // 更新所有骰子显示
+            for (let i = 0; i < 6; i++) {
+                const diceValue = i < dices.length ? dices[i] : 1;
+                updateDiceDisplay(`dice${i+1}`, diceValue);
+            }
+        }
+        
+        // 切换画面风格
+        function toggleTheme() {
+            isSkyBlueTheme = !isSkyBlueTheme;
+            const body = document.body;
+            const container = document.querySelector('.container');
+            const titleElement = document.querySelector('h1');
+            const diceElements = document.querySelectorAll('.dice');
+            const buttonElements = document.querySelectorAll('.button, .small-button');
+            const helpSection = document.querySelector('.help-section');
+            const remainingSigns = document.querySelector('.remaining-signs');
+            const roundInfo = document.querySelector('.round-info');
+            const historyContainer = document.getElementById('historyContainer');
+            const historyItems = document.querySelectorAll('.history-item');
+            const playerTurn = document.getElementById('playerTurn');
+            const resultElement = document.getElementById('result');
+            const tableContainer = document.querySelector('.table-container');
+            const gameTable = document.getElementById('gameTable');
+            const gameTableHeaders = document.querySelectorAll('#gameTable th');
+            // 添加自动投掷和键盘投掷元素
+            const autoRollCheckbox = document.getElementById('autoRoll');
+            const autoRollLabel = document.querySelector('label[for="autoRoll"]');
+            const keyRollCheckbox = document.getElementById('keyRoll');
+            const keyRollLabel = document.querySelector('label[for="keyRoll"]');
+            // 添加模态框元素
+            const rulesModal = document.getElementById('rulesModal');
+            const modalContent = rulesModal ? rulesModal.querySelector('.modal-content') : null;
+            const rulesContent = rulesModal ? rulesModal.querySelector('.rules-content') : null;
+            const rulesTitle = rulesContent ? rulesContent.querySelector('h2') : null;
+            const rulesSectionTitles = rulesContent ? rulesContent.querySelectorAll('h3') : [];
+            const rulesListItems = rulesContent ? rulesContent.querySelectorAll('li') : [];
+            
+            if (isSkyBlueTheme) {
+                // 应用天蓝色主题（稍微加深）
+                body.style.background = 
+                    /* 天蓝色主题渐变 - 稍微加深 */
+                    'linear-gradient(135deg, #bbdefb, #90caf9, #64b5f6, #42a5f5),' +
+                    /* 天蓝色传统云纹图案 */
+                    'url("data:image/svg+xml,%3Csvg width=\'120\' height=\'120\' viewBox=\'0 0 120 120\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M60 20C40 20 25 35 25 55s15 35 35 35 35-15 35-35S80 20 60 20zm0 60C45 80 35 70 35 55s10-25 25-25 25 10 25 25-10 25-25 25zm0-45c-8 0-15 7-15 15s7 15 15 15 15-7 15-15-7-15-15-15zm0 25c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm-25 5c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5zm50 0c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5zm-25-35c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5zm0 60c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5z\' fill=\'%23ffffff\' fill-opacity=\'0.08\' fill-rule=\'evenodd\'/%3E%3Cpath d=\'M60 10C20 10 0 30 0 60s20 50 60 50 60-20 60-50S100 10 60 10zm0 100C30 110 10 90 10 60S30 10 60 10s50 20 50 50-20 50-50 50z\' fill=\'%23ffffff\' fill-opacity=\'0.04\' fill-rule=\'evenodd\'/%3E%3C/svg%3E")';
+                body.style.backgroundAttachment = 'fixed';
+                body.style.backgroundSize = 'cover, 150px 150px';
+                body.style.backgroundBlendMode = 'overlay';
+                body.style.color = '#0d47a1';
+                container.style.boxShadow = '0 4px 20px rgba(100, 181, 246, 0.6)';
+                
+                // 标题样式
+                titleElement.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                titleElement.style.color = 'white';
+                titleElement.style.borderColor = '#0d47a1';
+                titleElement.style.transform = 'rotate(0deg)';
+                titleElement.style.borderWidth = '3px';
+                titleElement.style.borderStyle = 'solid';
+                
+                // 骰子样式
+                diceElements.forEach(dice => {
+                    dice.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                    dice.style.borderColor = '#0d47a1';
+                    dice.style.boxShadow = '0 3px 8px rgba(25, 118, 210, 0.4)';
+                });
+                
+                // 按钮样式
+                buttonElements.forEach(button => {
+                    // 重置所有按钮样式
+                    button.style.background = '';
+                    button.style.boxShadow = '';
+                    button.style.cursor = '';
+                    
+                    // 应用蓝色主题样式
+                    if (button.disabled) {
+                        // 禁用按钮样式
+                        button.style.background = 'linear-gradient(135deg, #bbdefb, #90caf9)';
+                        button.style.boxShadow = 'none';
+                        button.style.cursor = 'not-allowed';
+                    } else {
+                        // 启用按钮样式
+                        button.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                        button.style.boxShadow = '0 5px 15px rgba(25, 118, 210, 0.4)';
+                    }
+                });
+                
+                // 游戏规则样式
+                helpSection.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                helpSection.style.color = 'white';
+                helpSection.style.boxShadow = '0 4px 12px rgba(25, 118, 210, 0.4)';
+                
+                // 具体剩余签数样式
+                remainingSigns.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                remainingSigns.style.color = 'white';
+                remainingSigns.style.boxShadow = '0 4px 12px rgba(25, 118, 210, 0.4)';
+                
+                // 回合信息样式
+                roundInfo.style.color = '#0d47a1';
+                roundInfo.style.background = 'rgba(255, 255, 255, 0.8)';
+                roundInfo.style.boxShadow = '0 2px 8px rgba(25, 118, 210, 0.2)';
+                
+                // 历史记录样式
+                historyContainer.style.background = 'linear-gradient(135deg, #bbdefb, #90caf9)';
+                // 更新历史记录标题颜色
+                const historyTitle = historyContainer.querySelector('h3');
+                if (historyTitle) {
+                    historyTitle.style.color = '#1976d2';
+                }
+                // 更新现有历史记录项边框颜色
+                historyItems.forEach(item => {
+                    item.style.borderLeftColor = '#1976d2';
+                });
+                
+                // 玩家回合样式
+                playerTurn.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                playerTurn.style.webkitBackgroundClip = 'text';
+                playerTurn.style.backgroundClip = 'text';
+                playerTurn.style.webkitTextFillColor = 'transparent';
+                playerTurn.style.color = 'transparent';
+                
+                // 结果样式
+                resultElement.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                resultElement.style.color = 'white';
+                resultElement.style.boxShadow = '0 4px 12px rgba(25, 118, 210, 0.4)';
+                
+                // 游戏信息框样式（如果存在）
+                const gameInfo = document.querySelector('.game-info');
+                if (gameInfo) {
+                    gameInfo.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                    gameInfo.style.boxShadow = '0 4px 12px rgba(25, 118, 210, 0.4)';
+                }
+                
+                // 表格样式
+                tableContainer.style.background = 'rgba(255, 255, 255, 0.9)';
+                gameTable.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+                gameTableHeaders.forEach(header => {
+                    header.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                    header.style.color = 'white';
+                });
+                
+                // 应用主题样式到表格
+                applyThemeToTable();
+                
+                // 应用模态框蓝色主题样式
+                if (rulesModal) {
+                    if (modalContent) {
+                        modalContent.style.boxShadow = '0 10px 30px rgba(25, 118, 210, 0.3)';
+                    }
+                    if (rulesTitle) {
+                        rulesTitle.style.color = '#1976d2';
+                    }
+                    rulesSectionTitles.forEach(title => {
+                        title.style.color = '#1976d2';
+                        title.style.borderBottom = '1px solid #bbdefb';
+                    });
+                    rulesListItems.forEach(item => {
+                        item.style.color = '#2d3748'; // 具体牌型字体改为黑色
+                    });
+                }
+                
+                // 应用自动投掷和键盘投掷元素的蓝色主题样式
+                if (autoRollLabel) {
+                    autoRollLabel.style.color = '#1976d2';
+                }
+                if (keyRollLabel) {
+                    keyRollLabel.style.color = '#1976d2';
+                }
+            } else {
+                // 恢复默认红色主题
+                body.style.background = '';
+                body.style.color = '';
+                container.style.boxShadow = '';
+                
+                // 标题样式
+                titleElement.style.background = '';
+                titleElement.style.color = '';
+                titleElement.style.borderColor = '';
+                titleElement.style.transform = '';
+                titleElement.style.borderWidth = '';
+                titleElement.style.borderStyle = '';
+                
+                // 骰子样式
+                diceElements.forEach(dice => {
+                    dice.style.background = '';
+                    dice.style.borderColor = '';
+                    dice.style.boxShadow = '';
+                });
+                
+                // 按钮样式
+                buttonElements.forEach(button => {
+                    button.style.background = '';
+                    button.style.boxShadow = '';
+                    button.style.cursor = '';
+                });
+                
+                // 游戏规则样式
+                helpSection.style.background = '';
+                helpSection.style.color = '';
+                helpSection.style.boxShadow = '';
+                
+                // 具体剩余签数样式
+                remainingSigns.style.background = '';
+                remainingSigns.style.color = '';
+                remainingSigns.style.boxShadow = '';
+                
+                // 回合信息样式
+                roundInfo.style.color = '';
+                roundInfo.style.background = '';
+                roundInfo.style.boxShadow = '';
+                
+                // 历史记录样式
+                historyContainer.style.background = '';
+                // 恢复历史记录标题颜色
+                const historyTitle = historyContainer.querySelector('h3');
+                if (historyTitle) {
+                    historyTitle.style.color = '';
+                }
+                // 恢复历史记录项边框颜色
+                historyItems.forEach(item => {
+                    item.style.borderLeftColor = '';
+                });
+                
+                // 玩家回合样式
+                playerTurn.style.background = '';
+                playerTurn.style.webkitBackgroundClip = '';
+                playerTurn.style.backgroundClip = '';
+                playerTurn.style.webkitTextFillColor = '';
+                playerTurn.style.color = '';
+                
+                // 结果样式
+                resultElement.style.background = '';
+                resultElement.style.color = '';
+                resultElement.style.boxShadow = '';
+                
+                // 恢复游戏信息框样式
+                const gameInfo = document.querySelector('.game-info');
+                if (gameInfo) {
+                    gameInfo.style.background = '';
+                    gameInfo.style.boxShadow = '';
+                }
+                
+                // 表格样式
+                tableContainer.style.background = '';
+                gameTable.style.backgroundColor = '';
+                gameTableHeaders.forEach(header => {
+                    header.style.background = '';
+                    header.style.color = '';
+                });
+                
+                // 应用主题样式到表格（恢复默认样式）
+                applyThemeToTable();
+                
+                // 恢复模态框样式
+                if (rulesModal) {
+                    if (modalContent) {
+                        modalContent.style.boxShadow = '';
+                    }
+                    if (rulesTitle) {
+                        rulesTitle.style.color = '';
+                    }
+                    rulesSectionTitles.forEach(title => {
+                        title.style.color = '';
+                        title.style.borderBottom = '';
+                    });
+                    rulesListItems.forEach(item => {
+                        item.style.color = '';
+                    });
+                }
+                
+                // 恢复自动投掷和键盘投掷元素的默认样式
+                if (autoRollLabel) {
+                    autoRollLabel.style.color = '#8b0000';
+                }
+                if (keyRollLabel) {
+                    keyRollLabel.style.color = '#8b0000';
+                }
+            }
+        }
+        
+        // 更新历史记录显示
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('historyList');
+            if (history.length === 0) {
+                historyList.innerHTML = '<p style="color: #666; text-align: left;">暂无历史记录</p>';
+                return;
+            }
+            
+            let html = '';
+            for (let i = 0; i < history.length; i++) {
+                const record = history[i];
+                html += `<div class="history-item">
+                    第${record.round}回合${record.isBuZhi ? '（补掷）' : ''} - ${record.playerName}<br>
+                    骰子点数：${record.dices.join(' ')}【${record.detailedType}】（${record.typeName}）
+                </div>`;
+            }
+            historyList.innerHTML = html;
+            
+            // 如果是蓝色主题，更新新添加的历史记录项边框颜色
+            if (isSkyBlueTheme) {
+                const historyItems = document.querySelectorAll('.history-item');
+                historyItems.forEach(item => {
+                    item.style.borderLeftColor = '#1976d2';
+                });
+            }
+        }
+        
+        // 添加历史记录
+        function addHistoryRecord(detailedType, type) {
+            const record = {
+                round: round,
+                player: currentPlayer,
+                playerName: playerNames[currentPlayer],
+                dices: [...dices],
+                detailedType: detailedType,
+                type: type,
+                typeName: printTypeName(type),
+                isBuZhi: isBuZhiPhase
+            };
+            history.push(record);
+            updateHistoryDisplay();
+        }
+        
+        // 开始游戏
+        function startGame() {
+            gameStarted = true;
+            const rollButton = document.getElementById('rollButton');
+            const startButton = document.getElementById('startButton');
+            rollButton.disabled = false;
+            startButton.disabled = true;
+            updatePlayerTurn();
+            
+            // 更新按钮样式，确保掷骰子按钮显示为启用状态
+            if (isSkyBlueTheme) {
+                // 蓝色主题启用样式
+                rollButton.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                rollButton.style.boxShadow = '0 5px 15px rgba(25, 118, 210, 0.4)';
+                rollButton.style.cursor = 'pointer';
+                
+                // 禁用按钮样式
+                startButton.style.background = 'linear-gradient(135deg, #bbdefb, #90caf9)';
+                startButton.style.boxShadow = 'none';
+                startButton.style.cursor = 'not-allowed';
+            }
+        }
+        
+        // 重置游戏
+        function resetGame() {
+            initGame();
+            // 重置自动投掷状态
+            isAutoRollEnabled = false;
+            document.getElementById('autoRoll').checked = false;
+            if (autoRollTimer) {
+                clearTimeout(autoRollTimer);
+                autoRollTimer = null;
+            }
+            // 重置键盘投掷状态
+            isKeyRollEnabled = false;
+            document.getElementById('keyRoll').checked = false;
+        }
+        
+        // 切换自动投掷
+        function toggleAutoRoll() {
+            isAutoRollEnabled = document.getElementById('autoRoll').checked;
+            if (isAutoRollEnabled && gameStarted && !isRolling) {
+                // 如果启用了自动投掷，且游戏已开始，且不在投掷中，则立即开始自动投掷
+                autoRollTimer = setTimeout(rollDice, 500);
+            } else if (!isAutoRollEnabled && autoRollTimer) {
+                // 如果禁用了自动投掷，且有定时器，则清除定时器
+                clearTimeout(autoRollTimer);
+                autoRollTimer = null;
+            }
+        }
+        
+        // 切换键盘投掷
+        function toggleKeyRoll() {
+            isKeyRollEnabled = document.getElementById('keyRoll').checked;
+        }
+        
+        // 键盘事件监听器
+        document.addEventListener('keydown', function(event) {
+            // 只有在键盘投掷启用且自动投掷关闭的情况下，才响应键盘事件
+            if (isKeyRollEnabled && !isAutoRollEnabled && gameStarted && !isRolling) {
+                rollDice();
+            }
+        });
+        
+        // 更新玩家回合
+        function updatePlayerTurn() {
+            document.getElementById('playerTurn').textContent = `${playerNames[currentPlayer]}的回合`;
+        }
+        
+        // 更新具体剩余签数显示
+        function updateDetailedRemainingSigns() {
+            // 状元剩余数量：只有1个签，根据状元是否被获得判断
+            let zhuangYuanRemaining = 0;
+            // 如果 table[0][0] 是 0，说明状元还没被获得
+            if (table[0][0] === 0) {
+                zhuangYuanRemaining = 1;
+            } else {
+                // table[0][0] 不为 0，说明状元已经被获得
+                zhuangYuanRemaining = 0;
+            }
+            document.getElementById('remainingZhuangYuan').textContent = zhuangYuanRemaining;
+            
+            // 榜眼/探花剩余数量
+            document.getElementById('remainingBYTH').textContent = table[0][BANG_YAN_TAN_HUA];
+            
+            // 贡生剩余数量
+            document.getElementById('remainingGongSheng').textContent = table[0][GONG_SHENG];
+            
+            // 进士剩余数量
+            document.getElementById('remainingJinShi').textContent = table[0][JIN_SHI];
+            
+            // 举人剩余数量
+            document.getElementById('remainingJuRen').textContent = table[0][JU_REN];
+            
+            // 秀才剩余数量
+            document.getElementById('remainingXiuCai').textContent = table[0][XIU_CAI];
+        }
+        
+        // 更新回合信息
+        function updateRoundInfo() {
+            document.getElementById('round').textContent = round;
+            document.getElementById('remaining').textContent = table[0][6];
+            // 更新具体剩余签数
+            updateDetailedRemainingSigns();
+        }
+        
+        // 重置骰子显示
+        function resetDices() {
+            for (let i = 0; i < 6; i++) {
+                updateDiceDisplay(`dice${i+1}`, 1);
+                document.getElementById(`dice${i+1}`).classList.remove('rolling');
+            }
+        }
+        
+        // 掷骰子动画
+        function animateRolling() {
+            for (let i = 0; i < 6; i++) {
+                document.getElementById(`dice${i+1}`).classList.add('rolling');
+            }
+        }
+        
+        // 停止骰子动画
+        function stopRolling() {
+            for (let i = 0; i < 6; i++) {
+                document.getElementById(`dice${i+1}`).classList.remove('rolling');
+                updateDiceDisplay(`dice${i+1}`, dices[i]);
+            }
+        }
+        
+        // 掷骰子
+        function rollDice() {
+            if (!gameStarted || isRolling) return;
+            
+            isRolling = true;
+            const rollButton = document.getElementById('rollButton');
+            rollButton.disabled = true;
+            
+            // 如果是蓝色主题，手动更新按钮样式为禁用状态
+            if (isSkyBlueTheme) {
+                rollButton.style.background = 'linear-gradient(135deg, #bbdefb, #90caf9)';
+                rollButton.style.boxShadow = 'none';
+                rollButton.style.cursor = 'not-allowed';
+            }
+            
+            animateRolling();
+            
+            // 模拟骰子滚动
+            setTimeout(() => {
+                // 生成随机骰子点数
+                for (let i = 0; i < 6; i++) {
+                    dices[i] = Math.floor(Math.random() * 6) + 1;
+                }
+                
+                stopRolling();
+                
+                // 计算牌型和得分
+                const type = printSortType();
+                
+                // 记录当前剩余签数，用于判断是否进入抢状元阶段
+                const previousRemaining = table[0][6];
+                
+                if (isGongShengBuZhiPhase) {
+                    // 贡生补掷阶段
+                    handleGongShengBuZhi(type, currentBuZhiPlayer);
+                } else if (isQiangZhuangYuanPhase) {
+                    // 抢状元环节
+                    qiangZhuangYuan(type, currentPlayer);
+                } else {
+                    // 正常游戏环节
+                    printScore(type, currentPlayer);
+                }
+                
+                updateTable();
+                updateRoundInfo();
+                
+                // 检查是否进入抢状元阶段（在当前回合后剩余签数变为1，且最后一根是状元签）
+                if (table[0][6] === 1 && previousRemaining > 1 && !isQiangZhuangYuanPhase) {
+                    // 检查最后一根签是否是状元签
+                    // 如果 table[0][0] 是 0，说明状元还没被获得，那么最后一根签就是状元签
+                    if (table[0][0] === 0) {
+                        // 最后一根签是状元签，进入抢状元阶段
+                        isQiangZhuangYuanPhase = true;
+                        const resultElement = document.getElementById('result');
+                        resultElement.innerHTML += '<br>最后一根签是【状元】签，进入【抢状元】环节！';
+                    }
+                }
+                
+                // 检查游戏是否结束
+                let gameContinue = false;
+                if (table[0][6] > 0) {
+                    // 只要还有签，游戏就继续进行
+                    gameContinue = true;
+                }
+                // 不需要检查最后一根签是否是状元签，游戏会继续直到所有签被拿完
+                // 抢状元环节的触发条件已经在上面单独处理了
+                
+                if (!gameContinue) {
+                    // 游戏结束
+                    endGame();
+                } else if (!isGongShengBuZhiPhase) {
+                    // 不是补掷阶段，切换玩家
+                    currentPlayer = currentPlayer % 6 + 1;
+                    round++;
+                    updatePlayerTurn();
+                }
+                
+                isRolling = false;
+                rollButton.disabled = false;
+                
+                // 如果是蓝色主题，手动更新按钮样式为启用状态
+                if (isSkyBlueTheme) {
+                    rollButton.style.background = 'linear-gradient(135deg, #1976d2, #1565c0)';
+                    rollButton.style.boxShadow = '0 5px 15px rgba(25, 118, 210, 0.4)';
+                    rollButton.style.cursor = 'pointer';
+                }
+                
+                // 如果启用了自动投掷，设置定时器，0.5秒后再次投掷
+                if (isAutoRollEnabled && gameContinue) {
+                    autoRollTimer = setTimeout(rollDice, 500);
+                }
+            }, 2000); // 2秒动画
+        }
+        
+        // 处理贡生补掷逻辑
+        function handleGongShengBuZhi(type, player) {
+            const resultElement = document.getElementById('result');
+            let additionalResult = `补掷骰子：${dices.join(' ')}`;
+            
+            // 计算补掷的牌型和详细类型
+            const detailedType = currentDetailedType;
+            
+            // 添加补掷历史记录
+            addHistoryRecord(detailedType, type);
+            
+            if (type === JU_REN) {
+                // 补掷举人成功
+                additionalResult += `\n恭喜${playerNames[player]}获得【状元】签！`;
+                table[0][0] = GONG_SHENG;
+                table[0][6]--;
+                table[player][ZHUANG_YUAN] = 1;
+                table[player][6] += typeScore(ZHUANG_YUAN);
+            } else {
+                additionalResult += `\n很遗憾，未抢中状元！`;
+            }
+            
+            // 只有当additionalResult不为空时才添加，避免多余的空行
+            if (additionalResult && additionalResult.trim() !== '') {
+                // 清理additionalResult中的多余换行符和空格
+                additionalResult = additionalResult.replace(/\n+/g, '<br>');
+                additionalResult = additionalResult.trim();
+                resultElement.innerHTML += `<br>${additionalResult}`;
+            }
+            
+            // 重置贡生补掷阶段标志
+            isGongShengBuZhiPhase = false;
+            currentBuZhiPlayer = 0;
+        }
+        
+        // 计算牌型得分
+        function typeScore(type) {
+            switch (type) {
+                case ZHUANG_YUAN:
+                    return 32;
+                case BANG_YAN_TAN_HUA:
+                    return 16;
+                case GONG_SHENG:
+                    return 8;
+                case JIN_SHI:
+                    return 4;
+                case JU_REN:
+                    return 2;
+                case XIU_CAI:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
+        
+        // 打印牌型名称
+        function printTypeName(type) {
+            switch (type) {
+                case ERROR:
+                    return "type error";
+                case QUAN_CHAO:
+                    return "全抄";
+                case BANG_YAN_TAN_HUA:
+                    return "榜眼/探花";
+                case GONG_SHENG:
+                    return "贡生";
+                case JIN_SHI:
+                    return "进士";
+                case JU_REN:
+                    return "举人";
+                case XIU_CAI:
+                    return "秀才";
+                case QUAN_HEI:
+                    return "无";
+                default:
+                    return "状元";
+            }
+        }
+        
+        // 判断牌型并打印
+        function printSortType() {
+            const diceNumberCount = [0, 0, 0, 0, 0, 0, 0]; // [0]是点数正序六位数，其他是个数
+            let massNumberCount = 0;
+            
+            // 记录点数和众数
+            for (let i = 0; i < 6; i++) {
+                diceNumberCount[dices[i]]++;
+            }
+            
+            // 生成正序六位数
+            for (let i = 1; i <= 6; i++) {
+                for (let j = 0; j < diceNumberCount[i]; j++) {
+                    diceNumberCount[0] = diceNumberCount[0] * 10 + i;
+                }
+                if (diceNumberCount[i] > massNumberCount) {
+                    massNumberCount = diceNumberCount[i];
+                }
+            }
+            
+            let type = ERROR;
+            let detailedType = "";
+            let i, j, n;
+            
+            // 判断详细牌型（与C语言完全一致）
+            switch (massNumberCount) {
+                case 1:
+                    detailedType = "顺子";
+                    type = BANG_YAN_TAN_HUA;
+                    break;
+                case 2:
+                    // 检验对（C语言：for ( i = 1, n = 1; i <= 6 && n; i++) n = diceNumberCount[i] != 1;）
+                    n = 1;
+                    for (i = 1; i <= 6 && n; i++) {
+                        n = diceNumberCount[i] !== 1;
+                    }
+                    
+                    if (n) {
+                        // 有对子
+                        switch (diceNumberCount[0]) {
+                            case 114466:
+                                detailedType = "天地人";
+                                type = BANG_YAN_TAN_HUA;
+                                break;
+                            case 445566:
+                                detailedType = "摆台";
+                                type = BANG_YAN_TAN_HUA;
+                                break;
+                            case 223366:
+                                detailedType = "靠子";
+                                type = GONG_SHENG;
+                                break;
+                            default:
+                                if (diceNumberCount[4]) {
+                                    detailedType = "红对";
+                                    type = GONG_SHENG;
+                                } else {
+                                    detailedType = "黑对";
+                                    type = JIN_SHI;
+                                }
+                                break;
+                        }
+                    } else {
+                        // 散点
+                        switch (diceNumberCount[4]) {
+                            case 2:
+                                detailedType = "二红";
+                                type = JU_REN;
+                                break;
+                            case 1:
+                                detailedType = "一红";
+                                type = XIU_CAI;
+                                break;
+                            default:
+                                detailedType = "全黑";
+                                type = QUAN_HEI;
+                                break;
+                        }
+                    }
+                    break;
+                case 3:
+                    // 检验分（C语言：for ( i = 1, n = 1; i <= 6 && n; i++) n = diceNumberCount[i] == 0 || diceNumberCount[i] == 3;）
+                    n = 1;
+                    for (i = 1; i <= 6 && n; i++) {
+                        n = diceNumberCount[i] === 0 || diceNumberCount[i] === 3;
+                    }
+                    
+                    if (n) {
+                        // 三三组合
+                        type = BANG_YAN_TAN_HUA;
+                        switch (diceNumberCount[0]) {
+                            case 111444:
+                                detailedType = "金元宝";
+                                break;
+                            case 222444:
+                                detailedType = "金板凳";
+                                break;
+                            case 333444:
+                                detailedType = "金串珠";
+                                break;
+                            case 444555:
+                                detailedType = "金梅花";
+                                break;
+                            case 444666:
+                                detailedType = "金牛背";
+                                break;
+                            default:
+                                if (diceNumberCount[6] > 0) {
+                                    detailedType = "十八大";
+                                    type = GONG_SHENG;
+                                } else {
+                                    detailedType = "黑分";
+                                    type = JIN_SHI;
+                                }
+                                break;
+                        }
+                    } else {
+                        // 检验夺（C语言：if (diceNumberCount[1] == 2 && diceNumberCount[3] == 1 || diceNumberCount[1] == 1 && diceNumberCount[2] == 2)）
+                        if ((diceNumberCount[1] === 2 && diceNumberCount[3] === 1) || 
+                            (diceNumberCount[1] === 1 && diceNumberCount[2] === 2)) {
+                            switch (diceNumberCount[0]) {
+                                case 113444:
+                                case 122444:
+                                    detailedType = "黄金夺";
+                                    type = BANG_YAN_TAN_HUA;
+                                    break;
+                                case 113666:
+                                case 122666:
+                                    detailedType = "天夺";
+                                    type = GONG_SHENG;
+                                    break;
+                                default:
+                                    detailedType = "墨夺";
+                                    type = JIN_SHI;
+                                    break;
+                            }
+                        } else {
+                            // 普通三条
+                            switch (diceNumberCount[4]) {
+                                case 3:
+                                    detailedType = "三红";
+                                    type = GONG_SHENG;
+                                    break;
+                                case 2:
+                                    detailedType = "二红";
+                                    type = JU_REN;
+                                    break;
+                                case 1:
+                                    detailedType = "一红";
+                                    type = XIU_CAI;
+                                    break;
+                                default:
+                                    detailedType = "全黑";
+                                    type = QUAN_HEI;
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case 4:
+                    switch (diceNumberCount[0]) {
+                        case 134444:
+                            detailedType = "栀子";
+                            type = ZHI_ZI;
+                            break;
+                        case 246666:
+                            detailedType = "兰子";
+                            type = LAN_ZI;
+                            break;
+                        case 145555:
+                            detailedType = "屏子";
+                            type = PING_ZI;
+                            break;
+                        case 224444:
+                            detailedType = "格子";
+                            type = GE_ZI;
+                            break;
+                        case 235555:
+                            detailedType = "墨子";
+                            type = MO_ZI;
+                            break;
+                        case 156666:
+                            detailedType = "菩萨";
+                            type = PU_SA;
+                            break;
+                        case 123333:
+                            detailedType = "燕子";
+                            type = YAN_ZI;
+                            break;
+                        case 336666:
+                            detailedType = "双龙摆尾";
+                            type = SHUANG_LONG_BAI_WEI;
+                            break;
+                        case 112222:
+                            detailedType = "倒猴儿";
+                            type = DAO_HOU_ER;
+                            break;
+                        default:
+                            // 不是状元
+                            switch (diceNumberCount[4]) {
+                                case 4:
+                                    detailedType = "四红";
+                                    type = BANG_YAN_TAN_HUA;
+                                    break;
+                                case 2:
+                                    detailedType = "红四柱";
+                                    type = GONG_SHENG;
+                                    break;
+                                default:
+                                    detailedType = "四柱";
+                                    type = JIN_SHI;
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+                case 5:
+                    switch (diceNumberCount[0]) {
+                        case 344444:
+                            detailedType = "连中三元";
+                            type = LIAN_ZHONG_SAN_YUAN;
+                            break;
+                        case 444446:
+                            detailedType = "佛祖讲经";
+                            type = FO_ZU_JIANG_JING;
+                            break;
+                        case 444445:
+                            detailedType = "火烧梅花";
+                            type = HUO_SHAO_MEI_HUA;
+                            break;
+                        case 244444:
+                            detailedType = "藏书万卷";
+                            type = CANG_SHU_WAN_JUAN;
+                            break;
+                        case 144444:
+                            detailedType = "星星之火";
+                            type = XING_XING_ZHI_HUO;
+                            break;
+                        case 466666:
+                            detailedType = "将军挂印";
+                            type = JIANG_JUN_GUA_YIN;
+                            break;
+                        default:
+                            // 五子挂n（C语言：for ( i = 1, n = 0; i <= 6 && !n; i++) if (diceNumberCount[i] == 1) n = i;）
+                            n = 0;
+                            for (i = 1; i <= 6 && !n; i++) {
+                                if (diceNumberCount[i] === 1) {
+                                    n = i;
+                                }
+                            }
+                            switch (n) {
+                                case 1:
+                                    detailedType = "五子挂一";
+                                    type = WU_ZI_GUA_1;
+                                    break;
+                                case 2:
+                                    detailedType = "五子挂二";
+                                    type = WU_ZI_GUA_2;
+                                    break;
+                                case 3:
+                                    detailedType = "五子挂三";
+                                    type = WU_ZI_GUA_3;
+                                    break;
+                                case 4:
+                                    detailedType = "五子挂四";
+                                    type = WU_ZI_GUA_4;
+                                    break;
+                                case 5:
+                                    detailedType = "五子挂五";
+                                    type = WU_ZI_GUA_5;
+                                    break;
+                                case 6:
+                                    detailedType = "五子挂六";
+                                    type = WU_ZI_GUA_6;
+                                    break;
+                                default:
+                                    detailedType = "type error";
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+                case 6:
+                    type = QUAN_CHAO;
+                    switch (diceNumberCount[0]) {
+                        case 111111:
+                            detailedType = "白骨现天";
+                            break;
+                        case 222222:
+                            detailedType = "儿孙满堂";
+                            break;
+                        case 333333:
+                            detailedType = "燕子高飞";
+                            break;
+                        case 444444:
+                            detailedType = "万山红遍";
+                            break;
+                        case 555555:
+                            detailedType = "遍地梅花";
+                            break;
+                        case 666666:
+                            detailedType = "六六大顺";
+                            break;
+                        default:
+                            detailedType = "type error";
+                            break;
+                    }
+                    break;
+                default:
+                    detailedType = "type error";
+                    break;
+            }
+            
+            const resultElement = document.getElementById('result');
+            resultElement.innerHTML = `骰子点数：${dices.join(' ')}<br>牌型：【${detailedType}】（${printTypeName(type)}）`;
+            
+            // 添加历史记录
+            if (gameStarted) {
+                addHistoryRecord(detailedType, type);
+            }
+            
+            // 保存详细牌型到全局变量，供补掷时使用
+            currentDetailedType = detailedType;
+            return type;
+        }
+        
+        // 计分，打印得分
+        function printScore(type, player) {
+            const resultElement = document.getElementById('result');
+            let additionalResult = '';
+            
+            switch (type) {
+                case ERROR:
+                    additionalResult = 'type error';
+                    break;
+                case QUAN_CHAO:
+                    // 全抄，清空玩家得分，标记剩余签数（与C语言完全一致）
+                    for (let i = 1; i < 7; i++) {
+                        // 清空所有玩家的签数
+                        table[i][0] = 0;
+                        table[i][1] = 0;
+                        table[i][2] = 0;
+                        table[i][3] = 0;
+                        table[i][4] = 0;
+                        table[i][5] = 0;
+                        table[i][6] = 0;
+                    }
+                    table[0][6] = 0; // 标记游戏结束
+                    table[player][6] = 192; // 获得所有签（192分）
+                    additionalResult = `恭喜${playerNames[player]}【全抄】，获得所有签！`;
+                    break;
+                case QUAN_HEI:
+                    additionalResult = '很遗憾，未得到签！';
+                    break;
+                case LIAN_ZHONG_SAN_YUAN:
+                    // 连中三元
+                    if (table[0][0] === LIAN_ZHONG_SAN_YUAN) {
+                        // 有人有连中三元
+                        printScore(GONG_SHENG, player);
+                    } else {
+                        additionalResult = `恭喜${playerNames[player]}连中三元，获得【状元】【榜眼】【探花】签！`;
+                        let hasAdditionalLines = false;
+                        // 获得状元签
+                        if (table[0][0]) {
+                            // 有人有状元签
+                            table[0][0] = LIAN_ZHONG_SAN_YUAN;
+                            for (let i = 1; i < 7; i++) {
+                                if (table[i][ZHUANG_YUAN]) {
+                                    // i有状元
+                                    if (i === player) {
+                                        // 抢了自己的状元，补一根签
+                                        additionalResult += `\n${playerNames[player]}抢了自己的状元，补一根签`;
+                                        hasAdditionalLines = true;
+                                        printScore(GONG_SHENG, player);
+                                    } else {
+                                        // 抢了i的状元
+                                        additionalResult += `\n${playerNames[player]}抢了${playerNames[i]}的状元！`;
+                                        hasAdditionalLines = true;
+                                        table[i][ZHUANG_YUAN] = 0;
+                                        table[i][6] -= typeScore(ZHUANG_YUAN);
+                                        table[player][ZHUANG_YUAN] = 1;
+                                        table[player][6] += typeScore(ZHUANG_YUAN);
+                                    }
+                                    break;
+                                }
+                            }
+                        } else {
+                            // 无人有状元签
+                            table[0][0] = LIAN_ZHONG_SAN_YUAN;
+                            table[0][6]--;
+                            table[player][ZHUANG_YUAN] = 1;
+                            table[player][6] += typeScore(ZHUANG_YUAN);
+                        }
+                        // 获得榜眼探花签（抢夺所有榜眼探花）
+                        const totalBYTHSigns = 2;
+                        const currentBYTHSigns = table[player][BANG_YAN_TAN_HUA];
+                        const neededBYTHSigns = totalBYTHSigns - currentBYTHSigns;
+                        
+                        // 从总剩余签数中减去所有榜眼探花签
+                        table[0][6] -= table[0][BANG_YAN_TAN_HUA];
+                        
+                        // 玩家获得所有榜眼探花签
+                        table[player][BANG_YAN_TAN_HUA] = totalBYTHSigns;
+                        table[player][6] += neededBYTHSigns * typeScore(BANG_YAN_TAN_HUA);
+                        
+                        // 抢夺其他玩家的榜眼探花签
+                        for (let i = 1; i < 7; i++) {
+                            if (i === player) continue;
+                            if (table[i][BANG_YAN_TAN_HUA] > 0) {
+                                additionalResult += `\n${playerNames[player]}抢了${playerNames[i]}的榜眼/探花！`;
+                                hasAdditionalLines = true;
+                                table[player][6] += table[i][BANG_YAN_TAN_HUA] * typeScore(BANG_YAN_TAN_HUA);
+                                table[i][6] -= table[i][BANG_YAN_TAN_HUA] * typeScore(BANG_YAN_TAN_HUA);
+                                table[i][BANG_YAN_TAN_HUA] = 0;
+                            }
+                        }
+                        
+                        // 剩余榜眼探花签数为0
+                        table[0][BANG_YAN_TAN_HUA] = 0;
+                        
+                        // 只有在有额外行的情况下才添加换行符
+                        if (hasAdditionalLines) {
+                            additionalResult = additionalResult.replace(/\n/g, '<br>');
+                        }
+                    }
+                    break;
+                default:
+                    if (type < QUAN_HEI) {
+                        // 不是状元签
+                        if (table[0][type]) {
+                            // 有签
+                            table[0][type]--;
+                            table[0][6]--;
+                            table[player][type]++;
+                            table[player][6] += typeScore(type);
+                            let rankName = '';
+                            if (type === BANG_YAN_TAN_HUA) {
+                                rankName = table[0][BANG_YAN_TAN_HUA] ? '榜眼' : '探花';
+                            } else {
+                                rankName = printTypeName(type);
+                            }
+                            additionalResult = `恭喜${playerNames[player]}获得【${rankName}】签！`;
+                        } else {
+                            // 没有签
+                            printScore(type + 1, player);
+                        }
+                    } else {
+                        // 状元
+                        if (table[0][0]) {
+                            // 有人有状元签
+                            if (type > table[0][0]) {
+                                // 抢夺成功
+                                additionalResult = `恭喜${playerNames[player]}获得【状元】签！`;
+                                table[0][0] = type;
+                                for (let i = 1; i < 7; i++) {
+                                    if (table[i][ZHUANG_YUAN]) {
+                                        // i有状元
+                                        if (i === player) {
+                                            // 抢了自己的状元，补一根签
+                                            additionalResult += `${playerNames[player]}抢了自己的状元，补一根签`;
+                                            printScore(GONG_SHENG, player);
+                                        } else {
+                                            // 抢了i的状元
+                                            additionalResult += `${playerNames[player]}抢了${playerNames[i]}的状元！`;
+                                            table[i][ZHUANG_YUAN] = 0;
+                                            table[i][6] -= typeScore(ZHUANG_YUAN);
+                                            table[player][ZHUANG_YUAN] = 1;
+                                            table[player][6] += typeScore(ZHUANG_YUAN);
+                                        }
+                                        break;
+                                    }
+                                }
+                            } else {
+                                // 抢夺失败
+                                printScore(BANG_YAN_TAN_HUA, player);
+                            }
+                        } else {
+                            // 无人有状元签
+                            table[0][0] = type;
+                            table[0][6]--;
+                            table[player][ZHUANG_YUAN] = 1;
+                            table[player][6] += typeScore(ZHUANG_YUAN);
+                            additionalResult = `恭喜${playerNames[player]}获得【状元】签！`;
+                        }
+                    }
+            break;
+        }
+        
+        // 只有当additionalResult不为空时才添加，避免多余的空行
+        if (additionalResult && additionalResult.trim() !== '') {
+            // 清理additionalResult中的多余换行符和空格
+            additionalResult = additionalResult.replace(/\n+/g, '<br>');
+            additionalResult = additionalResult.trim();
+            resultElement.innerHTML += `<br>${additionalResult}`;
+        }
+    }
+        
+        // 最后抢状元
+        function qiangZhuangYuan(type, player) {
+            const resultElement = document.getElementById('result');
+            let additionalResult = '';
+            
+            switch (type) {
+                case GONG_SHENG:
+                    additionalResult = `恭喜玩家${player}掷出【贡生】，请点击掷骰子按钮进行补掷，若掷出【举人】可抢中状元！`;
+                    // 只有当additionalResult不为空时才添加，避免多余的空行
+                    if (additionalResult && additionalResult.trim() !== '') {
+                        // 清理additionalResult中的多余换行符和空格
+                        additionalResult = additionalResult.replace(/\n+/g, '<br>');
+                        additionalResult = additionalResult.trim();
+                        resultElement.innerHTML += `<br>${additionalResult}`;
+                    }
+                    
+                    // 设置贡生补掷阶段标志
+                    isGongShengBuZhiPhase = true;
+                    currentBuZhiPlayer = player;
+                    
+                    // 启用掷骰子按钮
+                    document.getElementById('rollButton').disabled = false;
+                    break;
+                case BANG_YAN_TAN_HUA:
+                    additionalResult = `恭喜${playerNames[player]}掷出【榜眼探花】，抢中状元！`;
+                    table[0][0] = BANG_YAN_TAN_HUA;
+                    table[0][6]--;
+                    table[player][ZHUANG_YUAN] = 1;
+                    table[player][6] += typeScore(ZHUANG_YUAN);
+                    additionalResult += `\n恭喜${playerNames[player]}获得【状元】签！`;
+                    // 只有当additionalResult不为空时才添加，避免多余的空行
+                    if (additionalResult && additionalResult.trim() !== '') {
+                        // 清理additionalResult中的多余换行符和空格
+                        additionalResult = additionalResult.replace(/\n+/g, '<br>');
+                        additionalResult = additionalResult.trim();
+                        resultElement.innerHTML += `<br>${additionalResult}`;
+                    }
+                    break;
+                default:
+                    // 其他牌型直接调用计分函数
+                    printScore(type, player);
+                    break;
+            }
+        }
+        
+        // 更新游戏表格
+        // 修改玩家名称的函数
+        function editPlayerName(playerIndex) {
+            const newName = prompt(`请输入玩家${playerIndex}的新名称：`, playerNames[playerIndex]);
+            if (newName && newName.trim() !== '') {
+                playerNames[playerIndex] = newName.trim();
+                updateTable();
+                updatePlayerTurn();
+            }
+        }
+        
+        function updateTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            // 计算实时排名
+            let players = [];
+            for (let i = 1; i < 7; i++) {
+                players.push({
+                    index: i,
+                    score: table[i][6]
+                });
+            }
+            
+            // 按分数降序排序
+            players.sort((a, b) => b.score - a.score);
+            
+            // 计算排名，处理同分情况
+            let ranks = {};
+            let currentRank = 1;
+            let previousScore = null;
+            
+            for (let i = 0; i < players.length; i++) {
+                if (players[i].score !== previousScore) {
+                    currentRank = i + 1;
+                    previousScore = players[i].score;
+                }
+                ranks[players[i].index] = currentRank;
+            }
+            
+            for (let i = 1; i < 7; i++) {
+                const row = document.createElement('tr');
+                
+                // 根据排名设置样式
+                let rankStyle = '';
+                let rankColor = '';
+                
+                switch (ranks[i]) {
+                    case 1:
+                        rankColor = '#ffd700'; // 金色
+                        break;
+                    case 2:
+                        rankColor = '#b0b0b0'; // 更深的银色
+                        break;
+                    case 3:
+                        rankColor = '#cd7f32'; // 铜色
+                        break;
+                    default:
+                        rankColor = '#000000'; // 黑色
+                }
+                
+                rankStyle = `font-weight: bold; color: ${rankColor}; font-size: 18px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);`;
+                
+                row.innerHTML = `
+                    <td style="${rankStyle}">${ranks[i]}</td>
+                    <td>
+                        ${playerNames[i]}
+                        <button onclick="editPlayerName(${i})" style="background: none; border: none; color: ${isSkyBlueTheme ? '#1976d2' : '#c0392b'}; cursor: pointer; font-size: 16px; margin-left: 5px;" title="修改名称">
+                            ✏️
+                        </button>
+                    </td>
+                    <td>${table[i][0] ? getZhuangYuanName(table[0][0]) : 0}</td>
+                    <td>${table[i][1]}</td>
+                    <td>${table[i][2]}</td>
+                    <td>${table[i][3]}</td>
+                    <td>${table[i][4]}</td>
+                    <td>${table[i][5]}</td>
+                    <td>${table[i][6]}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            }
+            
+            // 应用当前主题样式到表格
+            applyThemeToTable();
+        }
+        
+        // 应用当前主题样式到表格
+        function applyThemeToTable() {
+            if (isSkyBlueTheme) {
+                // 蓝色主题
+                const scoreCells = document.querySelectorAll('td:last-child');
+                scoreCells.forEach(cell => {
+                    cell.style.color = '#1976d2';
+                    cell.style.backgroundColor = 'rgba(25, 118, 210, 0.1)';
+                });
+                
+                // 偶数行样式
+                const evenRows = document.querySelectorAll('tr:nth-child(even)');
+                evenRows.forEach(row => {
+                    row.style.backgroundColor = '#e3f2fd';
+                });
+                
+                // 行悬停样式
+                const tableRows = document.querySelectorAll('tr');
+                tableRows.forEach(row => {
+                    row.style.backgroundColor = '';
+                    row.style.transition = 'background-color 0.3s ease';
+                    
+                    row.addEventListener('mouseenter', function() {
+                        this.style.backgroundColor = '#bbdefb';
+                    });
+                    
+                    row.addEventListener('mouseleave', function() {
+                        // 恢复原来的颜色
+                        if (Array.from(tableRows).indexOf(this) % 2 === 1) {
+                            // 偶数行（索引从0开始）
+                            this.style.backgroundColor = '#e3f2fd';
+                        } else {
+                            // 奇数行
+                            this.style.backgroundColor = '';
+                        }
+                    });
+                });
+            } else {
+                // 红色主题 - 恢复默认样式
+                const scoreCells = document.querySelectorAll('td:last-child');
+                scoreCells.forEach(cell => {
+                    cell.style.color = '';
+                    cell.style.backgroundColor = '';
+                });
+                
+                // 恢复表格行样式
+                const tableRows = document.querySelectorAll('tr');
+                tableRows.forEach(row => {
+                    row.style.backgroundColor = '';
+                    row.style.transition = '';
+                });
+                
+                // 移除行悬停事件监听器
+                tableRows.forEach(row => {
+                    row.onmouseenter = null;
+                    row.onmouseleave = null;
+                });
+            }
+        }
+        
+        // 获取状元名称
+        function getZhuangYuanName(type) {
+            switch (type) {
+                case DAO_HOU_ER:
+                    return "倒猴儿";
+                case SHUANG_LONG_BAI_WEI:
+                    return "双龙摆尾";
+                case YAN_ZI:
+                    return "燕子";
+                case PU_SA:
+                    return "菩萨";
+                case MO_ZI:
+                    return "墨子";
+                case GE_ZI:
+                    return "格子";
+                case PING_ZI:
+                    return "屏子";
+                case LAN_ZI:
+                    return "兰子";
+                case ZHI_ZI:
+                    return "栀子";
+                case WU_ZI_GUA_1:
+                    return "五子挂一";
+                case WU_ZI_GUA_2:
+                    return "五子挂二";
+                case WU_ZI_GUA_3:
+                    return "五子挂三";
+                case WU_ZI_GUA_4:
+                    return "五子挂四";
+                case WU_ZI_GUA_5:
+                    return "五子挂五";
+                case WU_ZI_GUA_6:
+                    return "五子挂六";
+                case JIANG_JUN_GUA_YIN:
+                    return "将军挂印";
+                case XING_XING_ZHI_HUO:
+                    return "星星之火";
+                case CANG_SHU_WAN_JUAN:
+                    return "藏书万卷";
+                case HUO_SHAO_MEI_HUA:
+                    return "火烧梅花";
+                case FO_ZU_JIANG_JING:
+                    return "佛祖讲经";
+                case LIAN_ZHONG_SAN_YUAN:
+                    return "连中三元";
+                case BANG_YAN_TAN_HUA:
+                    return "榜眼探花";
+                case GONG_SHENG:
+                    return "贡生";
+                default:
+                    return "error";
+            }
+        }
+        
+        // 清除结果
+        function clearResult() {
+            if (!gameStarted) {
+                document.getElementById('result').innerHTML = '欢迎来到抢状元游戏！点击开始游戏按钮开始游戏。<br>代码实现：刘畅<br>网页设计：梁嘉榕';
+            } else {
+                document.getElementById('result').innerHTML = '';
+            }
+        }
+        
+        // 结束游戏
+        function endGame() {
+            const resultElement = document.getElementById('result');
+            resultElement.innerHTML += '<br>游戏结束！';
+            
+            // 计算排名
+            const players = [];
+            for (let i = 1; i < 7; i++) {
+                players.push({ player: i, score: table[i][6] });
+            }
+            
+            // 按分数降序排序
+            players.sort((a, b) => b.score - a.score);
+            
+            // 处理排名，考虑平分情况
+            const rankedPlayers = [];
+            
+            for (let i = 0; i < players.length; i++) {
+                let rank = i + 1;
+                
+                // 检查前面有多少个相同分数的玩家，调整名次
+                for (let j = 0; j < i; j++) {
+                    if (players[i].score === players[j].score) {
+                        rank = rankedPlayers[j].rank;
+                        break;
+                    }
+                }
+                
+                rankedPlayers.push({
+                    ...players[i],
+                    rank: rank
+                });
+            }
+            
+            // 标记所有需要显示（平分）的玩家
+            const scoreMap = {};
+            // 统计每个分数出现的次数
+            rankedPlayers.forEach(player => {
+                scoreMap[player.score] = (scoreMap[player.score] || 0) + 1;
+            });
+            
+            // 显示排名
+            resultElement.innerHTML += '<br><br>最终排名：';
+            for (let i = 0; i < rankedPlayers.length; i++) {
+                const player = rankedPlayers[i];
+                const tieNote = scoreMap[player.score] > 1 ? '（平分）' : '';
+                resultElement.innerHTML += `<br>第${player.rank}名：${playerNames[player.player]} - ${player.score}分${tieNote}`;
+            }
+            
+            // 禁用掷骰子按钮
+            const rollButton = document.getElementById('rollButton');
+            rollButton.disabled = true;
+            
+            // 应用禁用样式，根据当前主题
+            if (isSkyBlueTheme) {
+                // 蓝色主题禁用样式
+                rollButton.style.background = 'linear-gradient(135deg, #bbdefb, #90caf9)';
+                rollButton.style.boxShadow = 'none';
+                rollButton.style.cursor = 'not-allowed';
+            } else {
+                // 红色主题禁用样式
+                rollButton.style.background = 'linear-gradient(135deg, #ffcccc, #ff9999)';
+                rollButton.style.boxShadow = 'none';
+                rollButton.style.cursor = 'not-allowed';
+            }
+        }
+        
+        // 初始化游戏
+        initGame();
+    </script>
+</body>
+</html>
